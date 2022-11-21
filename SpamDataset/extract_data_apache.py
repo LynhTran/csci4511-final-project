@@ -36,4 +36,4 @@ for file in files:
         emails.append(email_data)
 
 with open(output, 'w') as f:
-    json.dump(emails, f, ensure_ascii=False, indent=4)
+    json.dump(emails, f, ensure_ascii=True, indent=4)
