@@ -7,6 +7,10 @@ from sklearn.model_selection import train_test_split
 
 from sklearn.naive_bayes import MultinomialNB
 
+from sklearn import svm
+
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+
 import json
 import os
 
@@ -27,9 +31,31 @@ X_train_counts = count_vect.fit_transform(corpus)
 tfidf_transformer = TfidfTransformer()
 X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 
-X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.30, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.20, random_state=10)
 
-nb = MultinomialNB()
-nb.fit(X_train, y_train)
+#model = MultinomialNB()
+model = svm.LinearSVC()
 
-print("Accuracy of Model",nb.score(X_test,y_test)*100,"%")
+model.fit(X_train, y_train)
+
+
+y_pred = model.predict(X_test)
+
+
+print('Precision: %.3f' % precision_score(y_test, y_pred))
+print('Recall: %.3f' % recall_score(y_test, y_pred))
+print('F1: %.3f' % f1_score(y_test, y_pred))
+print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
+
+
+text = ['''Hi!
+Information for you You have a new transfer of funds, you need to withdraw =
+them
+Further instructions in the attached link:
+_______
+=F0=9F=91=9B Note!!! You have 5 hours to withdraw your funds after the time
+expires, your BTC will be automatically canceled! Withdraw money
+''']
+v = count_vect.transform(text).toarray()
+
+print(model.predict(v))
