@@ -2,12 +2,13 @@ import sys
 import os
 import json
 
-if len(sys.argv) != 3:
-    print('Usage: python {} apache_spamassassin_email_directory json_output_name'.format(os.path.basename(__file__)))
+if len(sys.argv) != 4:
+    print('Usage: python {} apache_spamassassin_email_directory json_output_name class'.format(os.path.basename(__file__)))
     sys.exit(1)
 
 path = sys.argv[1]
 output = sys.argv[2] + '.json'
+category = int(sys.argv[3])
 files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
 
 emails = []
@@ -29,7 +30,8 @@ for file in files:
         email_content = data_split[1]
         email_data = {
             'subject': email_subject,
-            'content': email_content
+            'content': email_content,
+            'class': category
         }
         emails.append(email_data)
 
