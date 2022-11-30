@@ -39,7 +39,13 @@ classes = data['class']
 
 print('Performing feature extraction')
 
-count_vect = CountVectorizer()
+count_vect = CountVectorizer(
+#    stop_words='english',
+    strip_accents='unicode',
+    decode_error='replace',
+    lowercase=True
+)
+
 X_train_counts = count_vect.fit_transform(corpus)
 
 tfidf_transformer = TfidfTransformer()
