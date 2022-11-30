@@ -21,7 +21,6 @@ for file in files:
             text_data = f.read()
         except:
             continue
-        f.close()
         data_split = text_data.split('\n\n', 1)
         email_headers = data_split[0]
         email_subject = 'NONE'
