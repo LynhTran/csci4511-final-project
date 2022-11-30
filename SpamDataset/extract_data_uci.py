@@ -23,12 +23,14 @@ with open(path) as f:
             if sms_class == 'ham':
                 ham.append({
                     'subject': None,
-                    'content': sms_content
+                    'content': sms_content,
+                    'class': 0
                 })
             elif sms_class == 'spam':
                 spam.append({
                     'subject': None,
-                    'content': sms_content
+                    'content': sms_content,
+                    'class': 1
                 })
 
 with open('uci_sms_ham.json', 'w') as f:
