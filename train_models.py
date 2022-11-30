@@ -17,6 +17,8 @@ from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_sc
 import json
 import os
 
+import time
+
 from pprint import pprint
 
 classes = ['not_spam', 'spam']
@@ -43,13 +45,25 @@ X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.20, random_state=10)
 
 def train_nb():
+    # Timer starts
+    starttime = time.time()
+
     model = MultinomialNB()
     model.fit(X_train, y_train)
+
+    totaltime = time.time() - starttime
+    print("Training time for Naive Bayes: " + str(totaltime * 1000) + " milliseconds")
     return model
 
 def train_svm():
+    # Timer starts
+    starttime = time.time()
+
     model = svm.LinearSVC()
     model.fit(X_train, y_train)
+
+    totaltime = time.time() - starttime
+    print("Training time for SVM: " + str(totaltime * 1000) + " milliseconds")
     return model
 
 def train_auto():
@@ -69,16 +83,20 @@ def check_model_stats(model):
     print('F1: %.3f' % f1_score(y_test, y_pred))
     print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
 
-print('Training model')
-model = train_auto()
+print('Training model: Naive Bayes')
+model = train_nb()
 
-check_model_stats(model)
-pprint(model.show_models(), indent=4)
+print('Training model: SVM')
+model = train_svm()
 
+# print('Training model')
+# model = train_auto()
 
+# check_model_stats(model)
+# pprint(model.show_models(), indent=4)
 
-print('Training model v2')
-model = train_auto_v2()
+# print('Training model v2')
+# model = train_auto_v2()
 
-check_model_stats(model)
-pprint(model.show_models(), indent=4)
+# check_model_stats(model)
+# pprint(model.show_models(), indent=4)
