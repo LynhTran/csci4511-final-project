@@ -1,3 +1,6 @@
+# Apache SpamAssassin email dataset: https://spamassassin.apache.org/old/publiccorpus/readme.html
+# Enron-Spam email dataset: http://nlp.cs.aueb.gr/software_and_datasets/Enron-Spam/readme.txt
+
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
