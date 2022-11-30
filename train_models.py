@@ -23,9 +23,9 @@ classes = ['not_spam', 'spam']
 
 print('Reading dataset')
 
-d1 = pd.read_json(os.path.join('SpamDataset', 'ham_easy.json'))
-d2 = pd.read_json(os.path.join('SpamDataset', 'ham_hard.json'))
-d3 = pd.read_json(os.path.join('SpamDataset', 'spam.json'))
+d1 = pd.read_json(os.path.join('SpamDataset', 'apache_ham_easy.json'))
+d2 = pd.read_json(os.path.join('SpamDataset', 'apache_ham_hard.json'))
+d3 = pd.read_json(os.path.join('SpamDataset', 'apache_spam.json'))
 
 data = pd.concat([d1, d2, d3])
 
