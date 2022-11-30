@@ -28,8 +28,11 @@ print('Reading dataset')
 d1 = pd.read_json(os.path.join('SpamDataset', 'apache_ham_easy.json'))
 d2 = pd.read_json(os.path.join('SpamDataset', 'apache_ham_hard.json'))
 d3 = pd.read_json(os.path.join('SpamDataset', 'apache_spam.json'))
-
 data = pd.concat([d1, d2, d3])
+
+#d1 = pd.read_json(os.path.join('SpamDataset', 'uci_sms_spam.json'))
+#d2 = pd.read_json(os.path.join('SpamDataset', 'uci_sms_ham.json'))
+#data = pd.concat([d1, d2])
 
 corpus = data['content']
 classes = data['class']
@@ -42,7 +45,7 @@ X_train_counts = count_vect.fit_transform(corpus)
 tfidf_transformer = TfidfTransformer()
 X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 
-X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.20, random_state=10)
+X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.30, random_state=10)
 
 def train_nb():
     # Timer starts
@@ -77,17 +80,27 @@ def train_auto_v2():
     return automl
 
 def check_model_stats(model):
+    starttime = time.time()
     y_pred = model.predict(X_test)
+    totaltime = time.time() - starttime
     print('Precision: %.3f' % precision_score(y_test, y_pred))
     print('Recall: %.3f' % recall_score(y_test, y_pred))
     print('F1: %.3f' % f1_score(y_test, y_pred))
     print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
+    print('Classification time: {}ms'.format(totaltime * 1000))
 
-print('Training model: Naive Bayes')
-model = train_nb()
+for x in range(0, 10):
+    print('Training model: Naive Bayes')
+    model = train_nb()
+    check_model_stats(model)
 
-print('Training model: SVM')
-model = train_svm()
+    print('\n')
+
+    print('Training model: SVM')
+    model = train_svm()
+    check_model_stats(model)
+
+    print('\n')
 
 # print('Training model')
 # model = train_auto()
