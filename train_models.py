@@ -45,7 +45,7 @@ count_vect = CountVectorizer(
     strip_accents='unicode',
     decode_error='replace',
     lowercase=True,
-    ngram_range=(2, 2)
+    ngram_range=(1, 1)
 )
 
 X_train_counts = count_vect.fit_transform(corpus)
