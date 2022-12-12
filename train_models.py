@@ -13,13 +13,14 @@ from autosklearn.classification import AutoSklearnClassifier
 from autosklearn.experimental.askl2 import AutoSklearn2Classifier
 
 from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
+from pprint import pprint
 
 import json
 import os
-
 import time
 
-from pprint import pprint
+import warnings
+warnings.filterwarnings("ignore")
 
 classes = ['not_spam', 'spam']
 
@@ -43,7 +44,8 @@ count_vect = CountVectorizer(
 #    stop_words='english',
     strip_accents='unicode',
     decode_error='replace',
-    lowercase=True
+    lowercase=True,
+    ngram_range=(2, 2)
 )
 
 X_train_counts = count_vect.fit_transform(corpus)
@@ -53,7 +55,7 @@ X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
 
 X_train, X_test, y_train, y_test = train_test_split(X_train_tfidf, classes, test_size=0.30, random_state=10)
 
-def train_nb():
+def train_nb(return_timings=False):
     # Timer starts
     starttime = time.time()
 
@@ -61,10 +63,14 @@ def train_nb():
     model.fit(X_train, y_train)
 
     totaltime = time.time() - starttime
-    print("Training time for Naive Bayes: " + str(totaltime * 1000) + " milliseconds")
-    return model
+    #print("Training time for Naive Bayes: " + str(totaltime * 1000) + " milliseconds")
+    if return_timings:
+        return model, totaltime
+    else:
+        return model
 
-def train_svm():
+
+def train_svm(return_timings=False):
     # Timer starts
     starttime = time.time()
 
@@ -72,50 +78,95 @@ def train_svm():
     model.fit(X_train, y_train)
 
     totaltime = time.time() - starttime
-    print("Training time for SVM: " + str(totaltime * 1000) + " milliseconds")
-    return model
+    #print("Training time for SVM: " + str(totaltime * 1000) + " milliseconds")
+    if return_timings:
+        return model, totaltime
+    else:
+        return model
 
-def train_auto():
-    automl = AutoSklearnClassifier(time_left_for_this_task=600)
+def train_auto(time_limit=3600):
+    automl = AutoSklearnClassifier(time_left_for_this_task=time_limit)
     automl.fit(X_train, y_train)
     return automl
 
-def train_auto_v2():
-    automl = AutoSklearn2Classifier(time_left_for_this_task=600)
+def train_auto_v2(time_limit=3600):
+    automl = AutoSklearn2Classifier(time_left_for_this_task=time_limit)
     automl.fit(X_train, y_train)
     return automl
 
 def check_model_stats(model):
-    starttime = time.time()
-    y_pred = model.predict(X_test)
-    totaltime = time.time() - starttime
+    classification_timings_avg = 0
+    for x in range(0, 10):
+        starttime = time.time()
+        y_pred = model.predict(X_test)
+        totaltime = time.time() - starttime
+        classification_timings_avg += totaltime
+    classification_timings_avg /= 10
     print('Precision: %.3f' % precision_score(y_test, y_pred))
     print('Recall: %.3f' % recall_score(y_test, y_pred))
     print('F1: %.3f' % f1_score(y_test, y_pred))
     print('Accuracy: %.3f' % accuracy_score(y_test, y_pred))
-    print('Classification time: {}ms'.format(totaltime * 1000))
+    print('Average Classification time: {}ms'.format(classification_timings_avg * 1000))
+
+nb_model = None
+svm_model = None
+
+nb_timings_avg = 0
+svm_timings_avg = 0
 
 for x in range(0, 10):
-    print('Training model: Naive Bayes')
-    model = train_nb()
-    check_model_stats(model)
+    nb_model, nb_timings = train_nb(return_timings=True)
+    svm_model, svm_timings = train_svm(return_timings=True)
+    nb_timings_avg += nb_timings
+    svm_timings_avg += svm_timings
 
-    print('\n')
+nb_timings_avg /= 10
+svm_timings_avg /= 10
 
-    print('Training model: SVM')
-    model = train_svm()
-    check_model_stats(model)
+print('Average NB Timing: {}'.format(nb_timings_avg))
+print('Average SVM Timings: {}'.format(svm_timings_avg))
 
-    print('\n')
+print('')
 
-# print('Training model')
-# model = train_auto()
+print('NB stats:')
+check_model_stats(nb_model)
 
-# check_model_stats(model)
-# pprint(model.show_models(), indent=4)
+print('')
 
-# print('Training model v2')
-# model = train_auto_v2()
+print('SVM stats:')
+check_model_stats(svm_model)
 
-# check_model_stats(model)
-# pprint(model.show_models(), indent=4)
+print('')
+
+print('Training auto-sklearn model v2 for 60sec')
+model = train_auto_v2(time_limit=60)
+pprint(model.show_models(), indent=4)
+check_model_stats(model)
+
+print('')
+
+print('Training auto-sklearn model v2 for 300sec')
+model = train_auto_v2(time_limit=300)
+pprint(model.show_models(), indent=4)
+check_model_stats(model)
+
+print('')
+
+print('Training auto-sklearn model v2 for 600sec')
+model = train_auto_v2(time_limit=600)
+pprint(model.show_models(), indent=4)
+check_model_stats(model)
+
+print('')
+
+print('Training auto-sklearn model v2 for 1800sec')
+model = train_auto_v2(time_limit=1800)
+pprint(model.show_models(), indent=4)
+check_model_stats(model)
+
+print('')
+
+print('Training auto-sklearn model v2 for 3600sec')
+model = train_auto_v2(time_limit=3600)
+pprint(model.show_models(), indent=4)
+check_model_stats(model)
